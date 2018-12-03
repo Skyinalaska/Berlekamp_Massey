@@ -6,7 +6,7 @@ void Function::resize(unsigned int new_size)
 		return;
 	size = new_size;
 	length = 0;
-	max_mon = 0;
+	//max_mon = 0;
 	if (mon)
 		delete[] mon;
 	mon = new Monomial[new_size];
@@ -16,7 +16,7 @@ void Function::resize(unsigned int new_size)
 Function::Function()
 {
 	length = 0;
-	max_mon = 0;
+	//max_mon = 0;
 	size = 10;
 	mon = new Monomial[10];
 }
@@ -62,7 +62,7 @@ void Function::operator=(const Function &a)
 	}
 
 	length = a.length;
-	max_mon = a.max_mon;
+	//max_mon = a.max_mon;
 	for (int i = 0; i < a.length; i++)
 	{
 		mon[i] = a.mon[i];
@@ -72,7 +72,7 @@ void Function::operator=(const Function &a)
 void Function::operator=(const Monomial &a)
 {
 	length = 1;
-	max_mon = 0;
+	//max_mon = 0;
 	mon[0] = a;
 }
 
@@ -86,7 +86,7 @@ void Function::operator=(unsigned int a)
 			mon[i] = 0;
 		}
 		length = 0;
-		max_mon = 0;
+		//max_mon = 0;
 	}
 	else
 	{
@@ -111,17 +111,17 @@ Function operator+(Function &a, Function &b)
 	}
 	for (; i < result.length; i++)
 	{
-		result.mon[i + a.length] = b.mon[i];
+		result.mon[i] = b.mon[i - a.length];
 	}
 
-	if (a.mon[a.max_mon] < b.mon[b.max_mon])
+	/*if (a.mon[a.max_mon] < b.mon[b.max_mon])
 	{
 		result.max_mon = b.max_mon + a.length;
 	}
 	else
 	{
 		result.max_mon = a.max_mon;
-	}
+	}*/
 
 	return result;
 }
@@ -134,12 +134,15 @@ Function operator+(Function &a, Monomial &b)
 		result.resize(a.length + 1);
 	}
 	result = a;
-	result.mon[result.length] = b;
-	if (a.mon[a.max_mon] < b)
+	if (b.is_null() == 0)
 	{
-		result.max_mon = result.length;
+		result.mon[result.length] = b;
+		/*if (a.mon[a.max_mon] < b)
+		{
+			result.max_mon = result.length;
+		}*/
+		result.length++;
 	}
-	result.length++;
 	return result;
 }
 
@@ -188,4 +191,24 @@ Function Function::r_shift()
 		res.mon[i] = mon[i].r_shift();
 	}
 	return res;
+}
+
+int Function::get_length()
+{
+	return length;
+}
+
+void Function::print_f()
+{
+	if (length > 0)
+	{
+		print(mon[0]);
+	}
+	for (int i = 1; i < length; i++)
+	{
+		std::cout << " + ";
+		print(mon[i]);
+	}
+	std::cout << "  ";
+
 }

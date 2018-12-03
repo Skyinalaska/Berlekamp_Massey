@@ -7,7 +7,7 @@ private:
 	int size;
 	int length;
 	Monomial* mon;		
-	int max_mon;		//номер старшего монома в массиве
+	//int max_mon;		//номер старшего монома в массиве
 
 	void resize(unsigned int new_size);
 public:
@@ -15,6 +15,8 @@ public:
 	Function(const Function &old_fun);
 	~Function();
 	bool is_null();
+	int get_length();
+
 	void operator=(const Function &a);
 	void operator=(const Monomial &a);
 	void operator=(unsigned int a);
@@ -23,5 +25,7 @@ public:
 	bool f_by_a(bool* a, unsigned int a_size);
 	friend bool compare_with_zero(Function &a);
 	Function r_shift();
+
+	void print_f();
 };
 

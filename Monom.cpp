@@ -19,6 +19,13 @@ void Monomial::resize(unsigned int new_size)
 	return;
 }
 
+//Function operator+(const Monomial& a, const Monomial& b)
+//{
+//	Function res;
+//	res.length;
+//	return res;
+//}
+
 Monomial::Monomial()
 {
 	size = 10;
@@ -123,7 +130,6 @@ bool Monomial::is_null()
 	return 1;
 }
 
-
 void Monomial::operator=(const Monomial &a)
 {
 	if (size < a.size)
@@ -137,7 +143,6 @@ void Monomial::operator=(const Monomial &a)
 		arr[i] = a.arr[i];
 	}
 }
-
 
 //Monomial& Monomial::operator=(Monomial &a)
 //{
@@ -244,8 +249,9 @@ bool Monomial::Tm_by_a(bool* a, unsigned int a_size)
 void print(const Monomial& a)
 {
 	for (int i = a.length - 1; i >= 0; i--)
-		std::cout << a.arr[i];
-	std::cout << std::endl;
+		if(a.arr[i] == 1)
+			std::cout << i;
+	//std::cout << std::endl;
 }
 
 /*----------------------------------------------*/

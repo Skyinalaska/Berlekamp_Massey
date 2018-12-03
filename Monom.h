@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 
-
 class Monomial
 {
 private:
@@ -28,7 +27,7 @@ public:
 	Monomial& operator++();
 	//Monomial operator++(int);
 	bool Tm_by_a(bool* a, unsigned int a_size);
-
+	//friend Function operator+(const Monomial& a, const Monomial& b);
 	friend int compare(const Monomial& a, const Monomial& b);
 
 	friend bool operator>(const Monomial& a, const Monomial& b);
