@@ -75,7 +75,7 @@ Monomial Monomial::l_shift()
 	Monomial result;
 	if (arr[0] == 1)
 	{
-		std::cout << "Error, can't l_shift" << std::endl;
+		std::cout << "Warning! Can't l_shift" << std::endl;
 		return result;
 	}
 

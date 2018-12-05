@@ -21,7 +21,7 @@ void Berlekamp_Massey(bool* a, unsigned int N)
 	Function s_tmp, s1_less_prev;			// s/s(m),  s1(<=m')
 
 	int t1_less = 0, t[2] = { 0, 0 };
-	int t1_less_prev = 0;					//t1(<=m');
+	int t1_less_prev = 0, t_res;			//t1(<=m');
 
 	//m^(-1) -> s0(m^(-1)), t0(m^(-1));
 	std::map <Monomial, std::pair <Function, int>> s0_lshift;
@@ -39,52 +39,39 @@ void Berlekamp_Massey(bool* a, unsigned int N)
 			else {
 				T0_m = T0_m_prev;
 			}
+
 			//проверка, что m^(-1) = 0 и s0(m^(-1)) = 0
-			
-			if (m.can_lshift() == 1)		//m!=0
+			m_l_shift = m.l_shift();
+			s_tmp = s0_lshift[m_l_shift].first;
+
+			if ((m.can_lshift() == 1) && (s_tmp.is_null() == 0))	//s!=0
 			{
-				m_l_shift = m.l_shift();
-				s_tmp = s0_lshift[m_l_shift].first;
-				if (s_tmp.is_null() == 0)	//s!=0
+				//0 
+				s_tmp = s_tmp.r_shift();
+				b = s_tmp.r_shift().f_by_a(a, N);			//b = s^(2)(a)
+
+				s[b] = s_tmp;
+				t[b] = s0_lshift[m_l_shift].second + 1;
+				t[!b] = std::min(t[0], t1_less_prev);
+				if (s1_less_prev.is_null() == 1)
+					s[!b] = 0;
+				else
+					s[!b] = s[b] + s1_less_prev;
+
+				if (t[1] > t1_less_prev)
 				{
-					//0 
-					s_tmp = s_tmp.r_shift();
-					b = s_tmp.r_shift().f_by_a(a, N);			//b = s^(2)(a)
-
-					s[b] = s_tmp;
-					t[b] = s0_lshift[m_l_shift].second + 1;
-					t[!b] = std::min(t[0], t1_less_prev);
-					if (s1_less_prev.is_null() == 1)
-							s[!b] = 0;
-						else
-							s[!b] = s[b] + s1_less_prev;
-					
-					if (t[1] > t1_less_prev)
-					{
-						s1_less = s[1];
-						t1_less = t[1];
-					}
-					else
-					{
-						s1_less = s1_less_prev;
-						t1_less = t1_less_prev;
-					}
-
-					tmp_pair = std::make_pair(s[0], t[0]);
-					s0_lshift.insert(std::pair<Monomial, std::pair<Function, int> >(m, tmp_pair));
-					s0_lshift.erase(m_l_shift);
-					T0_m_prev = T0_m;
-					s1_less_prev = s1_less;
-					t1_less_prev = t1_less;
-					//print(m); std::cout << " -> s = "; s.print_f();
-					//std::cout << " s0(m) = "; s0.print_f();
-					//std::cout << " s1(m) = "; s1.print_f();
-					//std::cout << " s1(<=m) = "; s1_less.print_f();
-					//std::cout << std::endl;
-					continue;
+					s1_less = s[1];
+					t1_less = t[1];
 				}
+				else
+				{
+					s1_less = s1_less_prev;
+					t1_less = t1_less_prev;
+				}
+
+				s0_lshift.erase(m_l_shift);
 			}
-			//иначе эта ветка s = 0;
+			else					//иначе эта ветка s = 0;
 			{
 				t[0] = 0;
 				t[1] = 0;
@@ -133,30 +120,27 @@ void Berlekamp_Massey(bool* a, unsigned int N)
 				{
 					s1_less = s1_less_prev;
 				}
-
-				tmp_pair = std::make_pair(s[0], t[0]);
-				s0_lshift.insert(std::pair<Monomial, std::pair<Function, int> >(m, tmp_pair));
-				T0_m_prev = T0_m;
-				s1_less_prev = s1_less;
-				t1_less_prev = t1_less;
-
-				//print(m); std::cout << " -> s = "; s_tmp.print_f(); 
-				//std::cout << " s0(m) = "; s0.print_f(); 
-				//std::cout << " s1(m) = "; s1.print_f(); 
-				//std::cout << " s1(<=m) = "; s1_less.print_f();
-				//std::cout << std::endl;
-
 			}
-		}
 
+			tmp_pair = std::make_pair(s[0], t[0]);
+			s0_lshift.insert(std::pair<Monomial, std::pair<Function, int> >(m, tmp_pair));
+			T0_m_prev = T0_m;
+			s1_less_prev = s1_less;
+			t1_less_prev = t1_less;
+			//print(m); std::cout << " -> s = "; s.print_f();
+			//std::cout << " s0(m) = "; s0.print_f();
+			//std::cout << " s1(m) = "; s1.print_f();
+			//std::cout << " s1(<=m) = "; s1_less.print_f();
+			//std::cout << std::endl;
+		}
 	}
 
 	if ((T0_m_prev.is_null() == 0) || (a[N] == 0))
 	{
-		//t = std::max(t0, t1);
+		t_res = std::max(t[0], t[1]);
 		
-		//std::cout << "complexity = " << N-t <<std::endl 
-		//	<< "min func : ";
+		std::cout << "complexity = " << N - t_res << std::endl;
+		std::cout << "min func = ";
 		if ((t[0] >= t[1]) && (s[0].is_null() == 1))
 			s[0].print_f();
 		else
